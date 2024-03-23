@@ -1,1 +1,2 @@
 papagal,Kiki,Perus,true-Vaccinare,Deparazitare,Toaleta
+caine,Rex,20,maroniu,3-Vaccinare,Deparazitare,Toaleta

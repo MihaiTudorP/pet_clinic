@@ -7,7 +7,7 @@ public abstract class Animal {
 
     protected Treatment[] treatments;
 
-    public Animal(String name) {
+    protected Animal(String name) {
         this.name = name;
     }
 
@@ -34,7 +34,7 @@ public abstract class Animal {
 
     public abstract double calculateBillTotal();
 
-    protected String showListOfTreatments(){
+    private String showListOfTreatments(){
          if (treatments == null || treatments.length == 0) return "";
          else {
              StringBuilder result = new StringBuilder();

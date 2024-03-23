@@ -1,121 +1,159 @@
 package runner;
 
 import model.*;
+import repository.OwnerRepository;
+import repository.TreatmentRepository;
+import service.ClinicService;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClinicRunner {
+
+    public static final String OWNER_NAME_PROMPT = "What's the owner's name?";
+
     public static void main(String[] args) throws FileNotFoundException {
-        searchPatientAndDisplayDetails(readAnimals());
+        ClinicService clinicService = new ClinicService(new OwnerRepository(), new TreatmentRepository());
+
+        while (true) {
+            displayMenu(clinicService);
+        }
     }
 
-    private static void searchPatientAndDisplayDetails(Animal[] animals) {
-        lookUpPatient(animals, readLookUpPatientName());
+    private static void displayMenu(ClinicService clinicService) {
+        System.out.println("""
+                Welcome to the pet clinic!
+                
+                Select an option from the menu below:
+                1. Add owners to the clinic
+                2. Add patient to the clinic
+                3. Add treatment to a patient in the clinic
+                4. Display all details for an owner
+                5. Display the total cost for a patient in the clinic
+                6. Exit
+               
+                """);
+
+        Scanner scanner = new Scanner(System.in);
+        int option = Integer.parseInt(scanner.nextLine());
+
+        switch (option) {
+            case 1 -> readOwners(clinicService);
+            case 2 -> readPatients(clinicService);
+            case 3 -> readTreaments(clinicService);
+            case 4 -> displayOwnerDetails(clinicService);
+            case 5 -> displayPatientBill(clinicService);
+            case 6 -> System.exit(0);
+            default -> System.out.println("Invalid option");
+        }
     }
 
-    private static String readLookUpPatientName() {
+    private static void displayPatientBill(ClinicService clinicService) {
+        String ownerName = readLookupName(OWNER_NAME_PROMPT);
+        String patientName = readLookupName("Enter patient name");
+        Animal patient = clinicService.getPatient(clinicService.getOwner(ownerName), patientName);
+        System.out.printf("Your total cost for %s is: %f%n", patient.getName(), patient.calculateBillTotal());
+    }
+
+    private static void displayOwnerDetails(ClinicService clinicService) {
+        String ownerName = readLookupName(OWNER_NAME_PROMPT);
+        Owner owner = clinicService.getOwner(ownerName);
+        System.out.println(owner);
+    }
+
+    private static void readTreaments(ClinicService clinicService) {
+        String ownerName = readLookupName(OWNER_NAME_PROMPT);
+        Owner owner = clinicService.getOwner(ownerName);
+        String patientName = readLookupName("What's the patient name?");
+        Animal patient = clinicService.getPatient(owner, patientName);
+        String treatmentName = readLookupName("What's the treatment name?");
+        clinicService.addPatientTreatment(owner, patient, treatmentName);
+    }
+
+    private static void readOwners(ClinicService clinicService){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many owners are in the clinic? ");
+        int owners = Integer.parseInt(scanner.nextLine());
+
+        for (int i = 0; i < owners; i++) {
+            clinicService.addOwner(readOwner(scanner));
+        }
+    }
+
+    private static void readPatients(ClinicService clinicService){
+        String ownerName = readLookupName(OWNER_NAME_PROMPT);
+        Owner owner = clinicService.getOwner(ownerName);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many animals does this owner have? ");
+        int animals = Integer.parseInt(scanner.nextLine());
+
+        for (int j = 0; j < animals; j++) {
+            System.out.println("Enter animal species: ");
+            String animalSpecies = scanner.nextLine();
+            System.out.println("Enter animal name: ");
+            String animalName = scanner.nextLine();
+            Animal patient = createAnimal(animalSpecies, scanner, animalName);
+            clinicService.addPatient(owner, patient);
+
+        }
+    }
+
+    private static Owner readOwner(Scanner scanner) {
+        System.out.println("Enter owner name: ");
+        String name = scanner.nextLine();
+        System.out.println("Enter owner street: ");
+        String street = scanner.nextLine();
+        System.out.println("Enter street number: ");
+        String number = scanner.nextLine();
+        System.out.println("Enter owner city: ");
+        String city = scanner.nextLine();
+        Address address = new Address(street, number, city);
+        return new Owner(name, address, null);
+    }
+
+    private static Animal createAnimal(String animalSpecies, Scanner scanner, String animalName) {
+        return switch (animalSpecies) {
+            case "Dog" -> createDog(scanner, animalName);
+            case "Cat" -> createCat(scanner, animalName);
+            case "Parrot" -> createParrot(scanner, animalName);
+            default -> null;
+        };
+    }
+
+    private static Parrot createParrot(Scanner scanner, String name) {
+        System.out.println("What species of parrot is it? ");
+        String species = scanner.nextLine();
+        System.out.println("Is it small? (y/n)");
+        String smallYN = scanner.nextLine();
+        boolean isSmall = "y".equalsIgnoreCase(smallYN);
+        return new Parrot(name, species, isSmall);
+    }
+
+    private static Cat createCat(Scanner scanner, String name) {
+        System.out.println("Enter animal breed: ");
+        String breed = scanner.nextLine();
+        System.out.println("Enter animal coat: ");
+        String coat = scanner.nextLine();
+        System.out.println("Enter animal age (years): ");
+        int age = Integer.parseInt(scanner.nextLine());
+        return new Cat(name, breed, coat, age);
+    }
+
+    private static Dog createDog(Scanner scanner, String name) {
+        System.out.println("Enter animal weight: ");
+        int animalWeight = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter animal color: ");
+        String animalColor = scanner.nextLine();
+        System.out.println("Enter animal age (years): ");
+        int age = Integer.parseInt(scanner.nextLine());
+        return new Dog(name, animalWeight, animalColor, age);
+    }
+
+    private static String readLookupName(String message) {
         Scanner screenInput = new Scanner(System.in);
-        System.out.println("Introduceti un nume: ");
+        System.out.println(message);
         String lookUpName = screenInput.nextLine();
         System.out.println();
         return lookUpName;
-    }
-
-    private static void lookUpPatient(Animal[] animals, String lookUpName) {
-        boolean found = false;
-        if (animals != null && animals.length != 0) {
-            for (Animal a : animals) {
-                if (lookUpName != null && lookUpName.equals(a.getName())) {
-                    found = true;
-                    a.displayAllDetailsToConsole();
-                }
-            }
-        } else {
-            System.out.println("Lista de pacienti este goala.");
-        }
-
-        if (!found){
-            System.out.println("Animalul cautat nu a fost gasit.");
-        }
-    }
-
-    private static Animal[] readAnimals() throws FileNotFoundException {
-        Treatment[] treatments = readTreatmentsFromFile();
-        Scanner input;
-        input = new Scanner(new File("pacienti.txt"));
-        Animal[] animals = null;
-        while (input.hasNextLine()){
-            String line = input.nextLine();
-
-            Animal a = createAnimal(line);
-
-            if (a != null) {
-                String[] mapping = line.split("-");
-                String[] treatmentDescriptions = mapping[1].split(",");
-                for (String treatmentDescription: treatmentDescriptions) {
-                    for (Treatment t : treatments) {
-                        if (t.getDescription().equals(treatmentDescription)){
-                            a.addTreatment(t);
-                        }
-                    }
-                }
-
-                if (animals == null) {
-                    animals = new Animal[1];
-                } else {
-                    animals = Arrays.copyOf(animals, animals.length + 1);
-                }
-                animals[animals.length - 1] = a;
-            }
-        }
-        return animals;
-    }
-
-    private static Animal createAnimal(String line) {
-        String[] mapping = line.split("-");
-        Animal a = null;
-        String[] animal = mapping[0].split(",");
-        switch (animal[0]) {
-            case "pisica" -> a = new Cat(animal[1], animal[2], animal[3], Integer.parseInt(animal[4]));
-            case "caine" ->
-                    a = new Dog(animal[1], Double.parseDouble(animal[2]), animal[3], Integer.parseInt(animal[4]));
-            case "papagal" -> a = new Parrot(animal[1], animal[2], Boolean.parseBoolean(animal[3]));
-            default -> System.out.println("Intrare nevalida detectata: " + line);
-        }
-        return a;
-    }
-
-    private static Treatment[] readTreatmentsFromFile() throws FileNotFoundException {
-        Scanner input = new Scanner(new File("tratament.txt"));
-        Treatment[] treatments = null;
-        while (input.hasNextLine()){
-            String line = input.nextLine();
-            String[] fields = line.split(",");
-            Treatment t = new Treatment(fields[0], Double.parseDouble(fields[1]));
-            if (treatments == null) {
-                treatments = new Treatment[1];
-            } else {
-                if (!isTreatmentAlreadyInList(treatments, t)) {
-                    treatments = Arrays.copyOf(treatments, treatments.length + 1);
-                }
-            }
-            treatments[treatments.length - 1] = t;
-        }
-        input.close();
-        return treatments;
-    }
-
-    private static boolean isTreatmentAlreadyInList(Treatment[] treatments, Treatment t) {
-        boolean found = false;
-        for (Treatment recordedTreatment: treatments){
-            if (recordedTreatment.equals(t)){
-                found = true;
-                break;
-            }
-        }
-        return found;
     }
 }
