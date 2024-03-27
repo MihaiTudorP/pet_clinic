@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class TreatmentRepository {
-    private Clinic clinic;
+    private final Clinic clinic;
 
     public TreatmentRepository() throws FileNotFoundException {
         clinic = new Clinic();
@@ -47,7 +47,7 @@ public class TreatmentRepository {
     public Treatment getTreatment(String treatment) {
         Treatment[] treatments = clinic.getTreatments();
         for (Treatment recordedTreatment: treatments){
-            if (recordedTreatment.getDescription().equalsIgnoreCase(treatment)){
+            if (recordedTreatment.description().equalsIgnoreCase(treatment)){
                 return recordedTreatment;
             }
         }

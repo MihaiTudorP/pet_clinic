@@ -40,7 +40,7 @@ public class Cat extends Animal {
     public double calculateBillTotal() {
         double total = 0;
         for (Treatment t: treatments) {
-            total += t.getPrice() * 1.9;
+            total += t.price() * 1.9;
         }
         return total;
     }

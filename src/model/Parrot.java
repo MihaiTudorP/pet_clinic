@@ -31,7 +31,7 @@ public class Parrot extends Animal{
     public double calculateBillTotal() {
         double total = 0;
         for (Treatment t: treatments) {
-            total += t.getPrice() * 1.9 + (small? t.getPrice()/10 : t.getPrice() * 100);
+            total += t.price() * 1.9 + (small? t.price()/10 : t.price() * 100);
         }
         return total;
     }

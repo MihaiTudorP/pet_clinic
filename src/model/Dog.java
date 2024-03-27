@@ -40,7 +40,7 @@ public class Dog extends Animal{
     public double calculateBillTotal() {
         double total = 0;
         for (Treatment t: treatments) {
-            total += t.getPrice() * 1.9 + ageInYears * weight * t.getPrice()/10;
+            total += t.price() * 1.9 + ageInYears * weight * t.price()/10;
         }
         return total;
     }
