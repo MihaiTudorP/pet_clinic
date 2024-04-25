@@ -1,15 +1,26 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 
-public abstract class Animal {
+public class Animal implements Serializable {
     private String name;
+    private String species;
+    private int age;
+
+    private String gender;
+    private String race;
+
+    public Animal(String name, String species, int age, String gender, String race) {
+        this.name = name;
+        this.species = species;
+        this.age = age;
+        this.gender = gender;
+        this.race = race;
+    }
 
     protected Treatment[] treatments;
-
-    protected Animal(String name) {
-        this.name = name;
-    }
 
     public String getName() {
         return name;
@@ -32,7 +43,13 @@ public abstract class Animal {
         }
     }
 
-    public abstract double calculateBillTotal();
+    public double calculateBillTotal(){
+        double total = 0;
+        for (Treatment treatment : treatments){
+            total += treatment.price();
+        }
+        return total;
+    }
 
     private String showListOfTreatments(){
          if (treatments == null || treatments.length == 0) return "";
@@ -53,5 +70,27 @@ public abstract class Animal {
     }
 
     @Override
-    public abstract String toString();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Animal animal = (Animal) o;
+        return age == animal.age && Objects.equals(name, animal.name) && Objects.equals(gender, animal.gender) && Objects.equals(species, animal.species) && Objects.equals(race, animal.race) && Objects.deepEquals(treatments, animal.treatments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age, gender, species, race, Arrays.hashCode(treatments));
+    }
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", gender='" + gender + '\'' +
+                ", species='" + species + '\'' +
+                ", race='" + race + '\'' +
+                ", treatments=" + Arrays.toString(treatments) +
+                '}';
+    }
 }

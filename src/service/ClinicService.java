@@ -3,6 +3,7 @@ package service;
 import model.Animal;
 import model.Owner;
 import model.Treatment;
+import repository.DefaultOwnerRepository;
 import repository.OwnerRepository;
 import repository.TreatmentRepository;
 
@@ -10,7 +11,7 @@ public class ClinicService {
     OwnerRepository ownerRepository;
     TreatmentRepository treatmentRepository;
 
-    public ClinicService(OwnerRepository ownerRepository, TreatmentRepository treatmentRepository) {
+    public ClinicService(DefaultOwnerRepository ownerRepository, TreatmentRepository treatmentRepository) {
         this.ownerRepository = ownerRepository;
         this.treatmentRepository = treatmentRepository;
     }

@@ -1,8 +1,8 @@
 package runner;
 
 import model.*;
-import repository.OwnerRepository;
-import repository.TreatmentRepository;
+import repository.DefaultOwnerRepository;
+import repository.DefaultTreatmentRepository;
 import service.ClinicService;
 
 import java.io.FileNotFoundException;
@@ -13,7 +13,7 @@ public class ClinicRunner {
     public static final String OWNER_NAME_PROMPT = "What's the owner's name?";
 
     public static void main(String[] args) throws FileNotFoundException {
-        ClinicService clinicService = new ClinicService(new OwnerRepository(), new TreatmentRepository());
+        ClinicService clinicService = new ClinicService(new DefaultOwnerRepository(), new DefaultTreatmentRepository());
 
         while (true) {
             displayMenu(clinicService);
@@ -88,12 +88,18 @@ public class ClinicRunner {
         int animals = Integer.parseInt(scanner.nextLine());
 
         for (int j = 0; j < animals; j++) {
-            System.out.println("Enter animal species: ");
-            String animalSpecies = scanner.nextLine();
             System.out.println("Enter animal name: ");
             String animalName = scanner.nextLine();
-            Animal patient = createAnimal(animalSpecies, scanner, animalName);
-            clinicService.addPatient(owner, patient);
+            System.out.println("Enter animal species: ");
+            String animalSpecies = scanner.nextLine();
+            System.out.println("Enter animal age: ");
+            int animalAge = Integer.parseInt(scanner.nextLine());
+            System.out.println("Enter animal gender:");
+            String animalGender = scanner.nextLine();
+            System.out.println("Enter animal race:");
+            String animalRace = scanner.nextLine();
+
+            clinicService.addPatient(owner, new Animal(animalName, animalSpecies, animalAge, animalGender, animalRace));
 
         }
     }
@@ -109,44 +115,6 @@ public class ClinicRunner {
         String city = scanner.nextLine();
         Address address = new Address(street, number, city);
         return new Owner(name, address);
-    }
-
-    private static Animal createAnimal(String animalSpecies, Scanner scanner, String animalName) {
-        return switch (animalSpecies) {
-            case "Dog" -> createDog(scanner, animalName);
-            case "Cat" -> createCat(scanner, animalName);
-            case "Parrot" -> createParrot(scanner, animalName);
-            default -> null;
-        };
-    }
-
-    private static Parrot createParrot(Scanner scanner, String name) {
-        System.out.println("What species of parrot is it? ");
-        String species = scanner.nextLine();
-        System.out.println("Is it small? (y/n)");
-        String smallYN = scanner.nextLine();
-        boolean isSmall = "y".equalsIgnoreCase(smallYN);
-        return new Parrot(name, species, isSmall);
-    }
-
-    private static Cat createCat(Scanner scanner, String name) {
-        System.out.println("Enter animal breed: ");
-        String breed = scanner.nextLine();
-        System.out.println("Enter animal coat: ");
-        String coat = scanner.nextLine();
-        System.out.println("Enter animal age (years): ");
-        int age = Integer.parseInt(scanner.nextLine());
-        return new Cat(name, breed, coat, age);
-    }
-
-    private static Dog createDog(Scanner scanner, String name) {
-        System.out.println("Enter animal weight: ");
-        int animalWeight = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter animal color: ");
-        String animalColor = scanner.nextLine();
-        System.out.println("Enter animal age (years): ");
-        int age = Integer.parseInt(scanner.nextLine());
-        return new Dog(name, animalWeight, animalColor, age);
     }
 
     private static String readLookupName(String message) {
