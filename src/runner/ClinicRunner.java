@@ -108,7 +108,7 @@ public class ClinicRunner {
         System.out.println("Enter owner city: ");
         String city = scanner.nextLine();
         Address address = new Address(street, number, city);
-        return new Owner(name, address, null);
+        return new Owner(name, address);
     }
 
     private static Animal createAnimal(String animalSpecies, Scanner scanner, String animalName) {

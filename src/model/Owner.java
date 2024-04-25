@@ -1,17 +1,16 @@
 package model;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Owner {
     private final String name;
     private final Address address;
-    private Animal[] animals;
+    private Set<Animal> animals;
 
-    public Owner(String name, Address address, Animal[] animals) {
+    public Owner(String name, Address address) {
         this.name = name;
         this.address = address;
-        this.animals = animals == null? new Animal[0] : animals;
     }
 
     public String getName() {
@@ -32,16 +31,20 @@ public class Owner {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, address, Arrays.hashCode(animals));
+        return Objects.hash(name, address, animals);
     }
 
-    public Animal[] getAnimals() {
-        return animals;
+    public Set<Animal> getAnimals() {
+        List<Animal> animals = new ArrayList<>();
+        Collections.copy(animals, animals.stream().collect(Collectors.toList()));
+        return animals.stream().collect(Collectors.toSet());
     }
 
     public void addAnimal(Animal animal) {
-        animals = Arrays.copyOf(animals, animals.length + 1);
-        animals[animals.length - 1] = animal;
+       if (animals == null){
+           animals = new HashSet<>();
+       }
+       animals.add(animal);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class Owner {
         return "Owner{" +
                 "name='" + name + '\'' +
                 ", address=" + address +
-                ", animals=" + Arrays.toString(animals) +
+                ", animals=" + animals +
                 '}';
     }
 }

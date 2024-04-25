@@ -40,5 +40,6 @@ public class ClinicService {
 
     public Animal getPatient(Owner owner, String patientName) {
         return ownerRepository.getAnimal(owner, patientName);
+
     }
 }

@@ -4,36 +4,25 @@ import model.Animal;
 import model.Owner;
 import model.Treatment;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class OwnerRepository {
-    private Owner[] owners;
+    private Set<Owner> owners;
 
     public void addOwner(Owner owner) {
         if (owners == null){
-            owners = new Owner[1];
-        } else {
-            owners = Arrays.copyOf(owners, owners.length + 1);
+            owners = new HashSet<>();
         }
 
-        owners[owners.length - 1] = owner;
+        owners.add(owner);
     }
 
     public Owner getOwner(String name) {
-        for (Owner owner : owners) {
-            if (owner.getName().equals(name)) {
-                return owner;
-            }
-        }
-        return null;
+        return owners.stream().filter(owner -> owner.getName().equals(name)).findFirst().orElse(null);
     }
 
     public void addAnimal(Owner owner, Animal animal) {
-        for(Owner own : owners) {
-            if (own.equals(owner)) {
-                own.addAnimal(animal);
-            }
-        }
+        owners.stream().filter(o -> o.getName().equals(owner.getName())).findFirst().ifPresent(o -> o.addAnimal(animal));
     }
 
     public Animal getAnimal(Owner owner, Animal patient) {
@@ -42,7 +31,14 @@ public class OwnerRepository {
                 return animal;
             }
         }
-        return null;
+
+        Owner retrieved = owners.
+                stream()
+                .filter(o -> o.getName().equals(owner.getName())).findFirst()
+                .orElseThrow();
+
+        Animal retrievedPatient = retrieved.getAnimals().stream().filter(p -> p.equals(patient)).findFirst().orElse(null);
+        return retrievedPatient;
     }
 
     public void addAnimalTreatment(Owner owner, Animal patient, Treatment treatment) {
@@ -61,5 +57,13 @@ public class OwnerRepository {
             }
         }
         return null;
+    }
+
+    public List<Animal> getAnimals() {
+        List<Animal> animals = new ArrayList<>();
+        for (Owner owner : owners) {
+            animals.addAll(owner.getAnimals());
+        }
+        return animals;
     }
 }
