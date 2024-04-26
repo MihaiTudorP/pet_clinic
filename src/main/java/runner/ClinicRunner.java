@@ -3,6 +3,8 @@ package runner;
 import model.*;
 import repository.DefaultOwnerRepository;
 import repository.DefaultTreatmentRepository;
+import repository.JDBCOwnerRepository;
+import repository.JDBCTreatmentRepository;
 import service.ClinicService;
 
 import java.io.FileNotFoundException;
@@ -13,7 +15,12 @@ public class ClinicRunner {
     public static final String OWNER_NAME_PROMPT = "What's the owner's name?";
 
     public static void main(String[] args) throws FileNotFoundException {
-        ClinicService clinicService = new ClinicService(new DefaultOwnerRepository(), new DefaultTreatmentRepository());
+        ClinicService clinicService = null;
+        try{
+            clinicService = new ClinicService(new JDBCOwnerRepository(), new JDBCTreatmentRepository());
+        } catch (Exception e) {
+            clinicService = new ClinicService(new DefaultOwnerRepository(), new DefaultTreatmentRepository());
+        }
 
         while (true) {
             displayMenu(clinicService);

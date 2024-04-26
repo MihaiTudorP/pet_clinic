@@ -30,6 +30,46 @@ public class Animal implements Serializable {
         this.name = name;
     }
 
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getRace() {
+        return race;
+    }
+
+    public void setRace(String race) {
+        this.race = race;
+    }
+
+    public Treatment[] getTreatments() {
+        return treatments;
+    }
+
+    public void setTreatments(Treatment[] treatments) {
+        this.treatments = treatments;
+    }
+
     public void addTreatment(Treatment treatment){
         if (treatments == null){
             treatments = new Treatment[1];
